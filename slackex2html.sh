@@ -8,16 +8,20 @@
 # take a nap !
 Debug() {
 	if [ $DEBUG -eq 1 ]; then
-		echo "debug: $1"
+		echo -e "debug: $1"
 		fi
 	}
-DEBUG="1"
+DEBUG="0"
 INPUT="$1"
 RECORDS=$(jq '.|length' $INPUT)
 Debug "INPUT $INPUT RECORDS $RECORDS"
 INDEX=0
 while [ $INDEX -lt $RECORDS ]; do 
-		TS=$( jq -r ".[$INDEX]|.ts" $INPUT)
-		INDEX=$( expr $INDEX + 1)
-		Debug $TS
+	TS=$( date -d @$( jq -r ".[$INDEX]|.ts" $INPUT) +%T)
+	USER=$( jq -r ".[$INDEX]|.user_profile.real_name" $INPUT)
+	MSG=$( jq -r ".[$INDEX]|.text" $INPUT)
+	INDEX=$( expr $INDEX + 1)
+	AVATAR=$( jq -r ".[$INDEX]|.user_profile.image_72" $INPUT)
+	Debug "$TS\n$USER\n$MSG\n$AVATAR"
+	echo "<tr><td><b>$TS</b></td><td><img src="$AVATAR"></td><td>${USER}:</td><td> $MSG</td></tr>"
 done
