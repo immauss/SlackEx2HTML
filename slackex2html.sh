@@ -11,7 +11,7 @@
 OS=$(uname)
 if [ "$OS" == "Darwin" ]; then
 	Date() {
-		date -r $( jq -r ".[$INDEX]|.ts" $INPUT) +%T
+		date -r $( jq -r ".[$INDEX]|.ts" $INPUT | sed "s/\(^[0-9]*\)\..*$/\1/") +%T
 		}
 else
 	Date() {
