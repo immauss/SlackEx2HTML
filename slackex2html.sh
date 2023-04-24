@@ -15,8 +15,8 @@
 # Use " while ! grep UID.Patter msg; do" for iteration ...
 
 # This for the user to configure.
-DEBUG="1"
-SRCDIR="/Users/scott/Downloads/CatalystSlackExport" # Set this if you dont' want to use the current working directory.
+DEBUG="0"
+SRCDIR="/Users/scott/Downloads/CatalystSlackExport/" # Set this if you dont' want to use the current working directory.
 DSTDIR="/Users/scott/SlackTest"
 mkdir -p $DSTDIR
 # This is where we start. It should be the root of the archive from Slack.
@@ -25,7 +25,7 @@ if [ -z $SRCDIR ]; then
 fi
 
 # Pre run Cleanup
-if [ -f slackex2html.debug]; then 
+if [ -f slackex2html.debug ]; then 
 	rm $SRCDIR/slackex2html.debug
 fi
 
@@ -119,28 +119,40 @@ for DIR in $SRCDIRS; do
 			Debug "OUTPUT $OUTPUT\n SRCDIR $SRCDIR\n INPUT $INPUT\n DATE $DATE\n YEAR $YEAR\n PWD $(pwd)"
 			while [ $INDEX -lt $RECORDS ]; do 
 				TS=$( Date )
-				MSG=$( jq -r ".[$INDEX]|.text" $INPUT)
-				if  echo $MSG | grep -isq http ; then
-					Debug "$MSG\nTHERE'S a LINK IN THIS MSG!!!"
-					#remove the < & > characters so the link will show up.
-					# this should be fixed to make this an anchor tag.
-					MSG=$( echo $MSG | tr '<|>' ' ')
-				fi
+				MSG=$( jq -r ".[$INDEX]|.text" $INPUT | tr '<|>|\r' ' ')
+# 				if  echo $MSG | grep -isq http ; then
+# 					Debug "$MSG\nTHERE'S a LINK IN THIS MSG!!!"
+# 					#remove the < & > characters so the link will show up.
+# 					# this should be fixed to make this an anchor tag.
+# 					MSG=$( echo $MSG | tr '<|>' ' ')
+# 				fi
 				# Replace the UIDs with actual user names on mentions
-			
-				while echo "$MSG" | grep -sq "<U..........>" ; do 
-					ID=$(echo $MSG | sed "s/^.*\(<U..........>\).*$/\1/;s/[<>]//g")
-					MSG=$(echo $MSG | sed "s/<${ID}>/${Users[$ID]}>/g")		
-					Debug "Found $ID in:\n$MSG"
+				if echo "$MSG" | egrep '<|>' ; then
+					echo "$MSG"
+					exit
+				fi 
+				while echo "$MSG" | egrep -sq "U[A-Z0-9]{10}\b" ; do 
+					
+					ID=$(echo "$MSG" | tr -d "\n" | sed -E "s/^.*(U[A-Z0-9]{10}).*$/\1/")
+					if [ "${Users[$ID]}x" != "x" ]; then
+						Debug "ID: $ID User: \"${Users[$ID]}\""
+						Debug "MSG: $MSG"
+						MSG=$(echo "$MSG" | sed "s/${ID}/${Users[$ID]}/g")
+						if [ $? -ne 0 ]; then
+							Debug "MSG: $MSG\nID: $ID\nUser: \"${Users[$ID]}\""
+						fi
+					else 
+						if [ ${#ID} -lt 11 ]; then
+							MSG=$(echo "$MSG" | sed "s/${ID}/UNKNOWN/g")
+						fi
+						if [ $? -ne 0 ]; then
+							Debug "##NO User Match ##\nMSG: \"$MSG\"\nID: $ID\nUser: ${Users[$ID]}"
+						fi
+					fi	
+					Debug "Found $ID in MSG:\n$MSG\nFrom: $INPUT at INDEX: $INDEX"
 				done 
 
-				# Replace the UIDs with actual user names on @ mentions
-			
-				while echo "$MSG" | grep -sq "<@U..........>" ; do
-					ID=$(echo $MSG | sed "s/^.*\(<@U..........>\).*$/\1/;s/[<>@]//g")
-					MSG=$(echo $MSG | sed "s/<@${ID}>/@${Users[$ID]}/g")		
-					Debug "Found $ID in:\n$MSG"
-				done 
+
 				# This sets up the Username and avatar, but sets them to null if the last
 				# entry was from the same user. This gives a cleaner look in the rendered html
 				USER=$( jq -r ".[$INDEX]|.user_profile.real_name" $INPUT)
@@ -154,7 +166,7 @@ for DIR in $SRCDIRS; do
 				LASTUSER=$USER
 				Debug "$TS\n$USER\n$MSG\n$AVATAR"
 				# Create a new row in the table;
-				echo "<tr><td><b>${USERNAME}</b></td><td><img src="$AVATAR"></td><td>$TS:</td><td> $MSG</td></tr>" >> $OUTPUT
+				echo "<tr><td style=\"vertical-align: top\"><b>${USERNAME}</b></td><td style=\"vertical-align: top\"><img src=\"$AVATAR\"></td><td style=\"vertical-align: top\">$TS:</td><td style=\"vertical-align: top\"> $MSG</td></tr>" >> $OUTPUT
 				# increase the INDEX
 				INDEX=$( expr $INDEX + 1)
 			done 
