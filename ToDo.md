@@ -1,4 +1,4 @@
-##- To Do list ##
+## To Do list ##
 - add link to github repo at bottom of pages.
 - add corp image to top center
 - merge two scripts to one
