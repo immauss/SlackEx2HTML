@@ -209,6 +209,8 @@ echo
 # numerical month.
 MONTHA=("NULL" "Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec") 
 
+# Make sure we are in the destination directory
+cd $DSTDIR
 # Create Channel index.
 echo "<html><body>" > index.html
 echo "<h1>$ORGNAME Slack History</h1>" >> index.html
@@ -218,7 +220,7 @@ done
 echo "</body></html>" >> index.html
 
 # Process through channels 
-cd $DSTDIR
+
 for DIR in $(ls -d -1 */); do
 
 	cd $DSTDIR/$DIR
