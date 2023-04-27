@@ -11,10 +11,11 @@
 
 # Things for the user to configure.
 DEBUG="0"
-SRCDIR="/Users/scott/Downloads/CatalystSlackExport/Test" # Set this if you dont' want to use the current working directory.
+# Where you unzipped the archive from Slack
+SRCDIR="/Users/scott/Downloads/CatalystSlackExport/Test"
+# where to put the output
 DSTDIR="/Users/scott/SlackTest"
 # RELDIR is the directory on the server where you are storing the files as seen from the web.
-# Example: /SlackHistory 
 RELDIR="/resources/Site/SlackHistory"
 # Main site home page
 HOME="https://vcisocatalyst.org"
@@ -202,7 +203,6 @@ echo
 # Each month links to that months messages
 # at top and bottom of each page, navigation to prev & next in
 # chronological order.
-
 
 # Array for Month names
 # Element 0 is NULL because there is no Month 0, this make the element number align with the 
