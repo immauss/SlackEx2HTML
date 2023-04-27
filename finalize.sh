@@ -10,11 +10,15 @@
 # Each month links to that months messages
 # at top and bottom of each page, navigation to prev & next in
 # chronological order.
+# Revision: 1.0 
+# Author: G.E. Scott Knauss
+# 		  Immauss Cybersecurity 
+# Written for: vCISO Catalyst
 
 WD=$(pwd)
 # This is the directory on the server where you are storing the files as seen from the web.
 # Example: /SlackHistory 
-RELDIR="file:///Users/scott/SlackTest/"
+RELDIR="/resources/Site/SlackHistory"
 # Main site home page
 HOME="https://vcisocatalyst.org"
 # Name of Organization for Title pages
@@ -26,7 +30,7 @@ MONTHA=("NULL" "Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov"
 echo "<html><body>" > index.html
 echo "<h1>$ORGNAME Slack History</h1>" >> index.html
 for Channel in $( ls -d -1 */ | tr -d "/"); do
-	echo "<a href=$Channel>#$Channel</a><br>" >> index.html
+	echo "<a href=\"$Channel/index.html\">#$Channel</a><br>" >> index.html
 done
 echo "</body></html>" >> index.html
 
@@ -75,7 +79,7 @@ for DIR in $(ls -d -1 */); do
 		for Year in ${YEARS[@]}; do 
 			
 			for Month in ${MONTHA[@]}; do
-				echo "$DIR $Year $Month ${Links[$Year-$Month]}"
+				#echo "$DIR $Year $Month ${Links[$Year-$Month]}"
 				if [ "x${Links[$Year-$Month]}" == "x" ]; then
 					Links[$Year-$Month]="$Month"
 				fi
