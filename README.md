@@ -1,4 +1,4 @@
-## SlackEx2HTML ##
+# SlackEx2HTML 
 This does exactly what the name implies: It converst a Slack export to a series of html files so you can search/browse through you full history from Slack. 
 ## Usage ##
 Edit the varibles to suit your system
