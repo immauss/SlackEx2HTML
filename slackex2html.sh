@@ -103,7 +103,7 @@ for DIR in $SRCDIRS; do
 	echo -e "\nChannel #$DIR"
 	cd ${SRCDIR}/${DIR}
 	Debug "PWD $(pwd)"
-	for MONTH in 01 02 03 04 05 06 07 08 09 10 11 12; do	
+	for MONTH in 01 02 03 04 05 06 07 08 09 10 11 12; do
 		Debug "MONTH $MONTH"		
 		for INPUT in $( ls ????-$MONTH-??.json 2> /dev/null| sort); do
 			Debug "INPUT at Start -$INPUT-"
@@ -111,8 +111,9 @@ for DIR in $SRCDIRS; do
 			YEAR=$(echo $DATE | sed "s/\(^....\)-.*$/\1/")
 			mkdir -p "${DSTDIR}/${DIR}/${YEAR}"
 			OUTPUT="${DSTDIR}/${DIR}/${YEAR}/${MONTH}.html"
+			Title="$ORG #$DIR $YEAR-$MONTH"	
 			if ! [ -f "$OUTPUT" ]; then
-				echo "<html><body>" > $OUTPUT
+				echo "<html><body> <head> <title>$title</title></head>" > $OUTPUT
 				echo "<center><h1>#$DIR</h1></center>" >> $OUTPUT
 				echo "xxxNAVIGATIONxxx" >> $OUTPUT
 			fi
