@@ -113,7 +113,7 @@ for DIR in $SRCDIRS; do
 			OUTPUT="${DSTDIR}/${DIR}/${YEAR}/${MONTH}.html"
 			Title="$ORG #$DIR $YEAR-$MONTH"	
 			if ! [ -f "$OUTPUT" ]; then
-				echo "<html><body> <head> <title>$title</title></head>" > $OUTPUT
+				echo "<html><body> <head> <title>$Title</title></head>" > $OUTPUT
 				echo "<center><h1>#$DIR</h1></center>" >> $OUTPUT
 				echo "xxxNAVIGATIONxxx" >> $OUTPUT
 			fi
