@@ -9,7 +9,7 @@
 # cleaned up list of users to store actual user's real name in variable. Then use sed again 
 # to replace it in the message. 
 
-. .slackex.cfg
+. ~/.slackex.cfg
 # Setup the Header for the main index.
 # This includes the js bits needed for the search to work.
 INDEXHEAD="<html><head> <title>vCISO Catalyst Slack History</title>
