@@ -267,7 +267,7 @@ for DIR in $(ls -d -1 */); do
 			fi
 			# Insert Navigation
 			NAVIGATION="<a href=\"$HOME\">Home</a></br><a href=\"$RELDIR/index.html\">Channel Index</a> </p>/$PREV --- $NEXT</br>"
-
+			Debug "$filename $NAVIGATION"
 			sed -i "" "s|xxxNAVIGATIONxxx|$NAVIGATION|g" $filename
 		done
 		# Now create the channel index file based on available month files.
