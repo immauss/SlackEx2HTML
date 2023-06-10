@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
-# Create array of usernames to IDs
-# Create cache of User avatars
-# Get number of entries in file with ".|length"
-# start at 0 index and got to < $length
-# use jq to extract each element of indexed item and assign to bash var
-# output HTML using generated vars
-# Check message for UID pattern <U..........>. Use sed.. Then set variable for user with AWK against 
-# cleaned up list of users to store actual user's real name in variable. Then use sed again 
-# to replace it in the message. 
-
-. ~/.slackex.cfg
+# Source the config. 
+if [ -f ~/.slackex.cfg ]; then
+	. ~/.slackex.cfg
+elif [ -f .slackex.cfg ]; then
+	. .slackex.cfg ]
+else
+	echo "No config (.slackex.cfg) found"
+	exit 1
+fi
+if ! [ -z $1 ]; then
+	if echo "$1" | grep -qis "\.zip$"; then
+		echo "Usuing $1 as archive"
+		SRCDIR=$(mktemp -d)
+		echo "Using $WORKDIR for archive extraction"
+		unzip "$1" -d $SRCDIR || die "$?"
+	else
+		echo " I don't know what to do with $@"
+		echo " Usage:"
+		echo " slackex2html [ archive-name.zip ]"
+		exit
+	fi
+fi
+# make sure the java script and .css are in the Destination Directory
+cp *.css *.js $DSTDIR
 # Setup the Header for the main index.
 # This includes the js bits needed for the search to work.
 INDEXHEAD="<html><head> <title>vCISO Catalyst Slack History</title>
@@ -245,7 +258,6 @@ echo "</body></html>" >> index.html
 # Process through channels 
 
 for DIR in $(ls -d -1 */); do
-
 	cd $DSTDIR/$DIR
 	echo "Working in $(pwd)"
 	Channel=$( echo $DIR | tr -d "/")
@@ -267,8 +279,8 @@ for DIR in $(ls -d -1 */); do
 			fi
 			# Insert Navigation
 			NAVIGATION="<a href=\"$HOME\">Home</a></br><a href=\"$RELDIR/index.html\">Channel Index</a> </p>/$PREV --- $NEXT</br>"
-			Debug "$filename $NAVIGATION"
-			sed -i "" "s|xxxNAVIGATIONxxx|$NAVIGATION|g" $filename
+			Debug "$filename\n$NAVIGATION\n$(pwd)\n$DIR\n$DSTDIR\n$(ls -l)\n$(ls -l $filename)"
+			sed -i "s|xxxNAVIGATIONxxx|$NAVIGATION|g" $filename
 		done
 		# Now create the channel index file based on available month files.
 		# filenames look like: "./2023/04.html"
@@ -309,4 +321,6 @@ for DIR in $(ls -d -1 */); do
 done
 
 # Rebuild the index
+cd $DSTDIR
+npm install lunr cheerio 
 node build_index.js 
